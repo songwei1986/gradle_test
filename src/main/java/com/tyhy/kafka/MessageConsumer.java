@@ -21,14 +21,12 @@ public class MessageConsumer {
 	private ExecutorService executor;
 	private String topic;
 	private String groupId;
-	private Class clazz;
-	private String methodName;
+	private Class<ConsumerRecordHandler> calbackClazz;
 	
-	public MessageConsumer(String topic, String groupId, Class clazz, String methodName){
+	public MessageConsumer(String topic, String groupId, Class calbackClazz){
         this.topic = topic;
         this.groupId = groupId;
-        this.clazz = clazz;
-        this.methodName = methodName;
+        this.calbackClazz = calbackClazz;
     }
 	
     private void init() {
@@ -45,11 +43,22 @@ public class MessageConsumer {
     	init();
     	// TODO
         executor = new ThreadPoolExecutor(threadNumber, threadNumber, 0l, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<>(1000));
-        while (true){
-            ConsumerRecords<String,String> consumerRecords = consumer.poll(100);
-            for (ConsumerRecord<String, String> item : consumerRecords){
-                executor.submit(new ConsumerThreadHandler(item, clazz, methodName));
-            }
-        }
+        try {
+        	while (true){
+        		ConsumerRecords<String,String> consumerRecords = consumer.poll(100);
+        		for (ConsumerRecord<String, String> item : consumerRecords){
+        			executor.submit(new ConsumerThreadHandler(item, (ConsumerRecordHandler) calbackClazz.forName(calbackClazz.getName()).newInstance()));
+        		}
+        		consumer.commitAsync();
+        	}
+		} catch (Exception e) {
+			logger.debug("getKafakaMessageExpception", e);
+		} finally {
+			try {
+				consumer.commitSync();
+			} finally {
+				consumer.close();
+			}
+		}
     }
 }

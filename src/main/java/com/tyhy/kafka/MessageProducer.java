@@ -1,6 +1,5 @@
 package com.tyhy.kafka;
 
-import java.lang.reflect.Method;
 import java.util.Properties;
 
 import org.apache.kafka.clients.producer.Callback;
@@ -10,9 +9,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class MessageProducer {
 	public Logger logger = LoggerFactory.getLogger(MessageProducer.class);
@@ -41,17 +37,12 @@ public class MessageProducer {
     	producer = new KafkaProducer<String, String>(kafkaProperties);
     }
     
-	public String syncSend(String topic, String key, String value) {
+	public RecordMetadata syncSend(String topic, String key, String value) {
 		ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, key, value);
-		RecordMetadata recordMetadata = null;
 		try {
-			recordMetadata = producer.send(record).get();
-			if(recordMetadata != null) {
-				Gson gson = new GsonBuilder().create();
-				return gson.toJson(recordMetadata);
-			}
+			return producer.send(record).get();
 		} catch (Exception e) {
-			logger.info(e.getMessage());
+			logger.debug("sendKafakaMessageExpception", e);
 		} finally {
 			producer.close();
 		}
@@ -63,7 +54,7 @@ public class MessageProducer {
 		try {
 			producer.send(record, callback);
 		} catch (Exception e) {
-			logger.info(e.getMessage());
+			logger.debug("sendKafakaMessageExpception", e);
 		} finally {
 			producer.close();
 		}

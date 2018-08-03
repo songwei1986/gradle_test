@@ -1,5 +1,7 @@
 package com.tyhy.kafka;
 
+import org.apache.kafka.clients.producer.RecordMetadata;
+
 public class TestProducer {
 	public static void main(String[] args) {
 		String topic = "CustomerCountry";
@@ -7,10 +9,10 @@ public class TestProducer {
 		String value = "value123";
 		
 		// 有返回值
-//		String result = MessageProducer.getInstance().syncSend("", "testKey99", "testValue99");
-//		System.err.println(result);
+		RecordMetadata result = MessageProducer.getInstance().syncSend(topic, key, value);
+		System.err.println("syncSendMessageResult: " + result.toString());
 		
 		// 有回调
-		MessageProducer.getInstance().asyncSend(topic, key, value, new AsyncSendCallback());
+//		MessageProducer.getInstance().asyncSend(topic, key, value, new AsyncSendCallback());
 	}
 }
