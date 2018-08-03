@@ -1,7 +1,5 @@
 package com.tyhy.kafka;
 
-import org.apache.kafka.clients.producer.RecordMetadata;
-
 public class TestProducer {
 	public static void main(String[] args) {
 		String topic = "CustomerCountry";
@@ -13,10 +11,6 @@ public class TestProducer {
 //		System.err.println(result);
 		
 		// 有回调
-		MessageProducer.getInstance().asyncSend(topic, key, value, TestProducer.class, "customCallback");
-	}
-	
-	public void customCallback(RecordMetadata recordMetadata) {
-		System.err.println("asyncSend customCallback");
+		MessageProducer.getInstance().asyncSend(topic, key, value, new AsyncSendCallback());
 	}
 }

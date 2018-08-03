@@ -32,8 +32,6 @@ public class MessageProducer {
     
     private Properties kafkaProperties = null;
 	private Producer<String, String> producer = null;
-	private Class clazz;
-	private String methodName;
 	
     private void init() {
     	kafkaProperties = new Properties();
@@ -60,12 +58,10 @@ public class MessageProducer {
 		return null;
 	}
 	
-	public void asyncSend(String topic, String key, String value, Class clazz, String methodName) {
+	public void asyncSend(String topic, String key, String value, Callback callback) {
 		ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, key, value);
 		try {
-			this.clazz = clazz;
-			this.methodName = methodName;
-			producer.send(record, new DemoProducerCallback());
+			producer.send(record, callback);
 		} catch (Exception e) {
 			logger.info(e.getMessage());
 		} finally {
@@ -73,24 +69,7 @@ public class MessageProducer {
 		}
 	}
 
-	private class DemoProducerCallback implements Callback{
-		@Override
-		public void onCompletion(RecordMetadata metadata, Exception exception) {
-			if(exception != null) {
-				logger.info(exception.getMessage());
-			}else {
-				Object obj;
-				try {
-					obj = Class.forName(clazz.getName()).newInstance();
-					Method method = clazz.getMethod(methodName, RecordMetadata.class);
-					method.invoke(obj, metadata);
-				} catch (Exception e) {
-					logger.info(e.getMessage());
-				} 
-			}
-		}
-		
-	}
+	
 	
 
 }
