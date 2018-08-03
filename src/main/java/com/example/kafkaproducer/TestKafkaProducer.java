@@ -20,9 +20,9 @@ public class TestKafkaProducer {
 		
 		Producer<String, String> producer = new KafkaProducer<String, String>(kafkaProperties);
 		
-//		tfp.testSimpleSend(kafkaProperties, producer);
+		tfp.testSimpleSend(kafkaProperties, producer);
 //		tfp.testSyncSend(kafkaProperties, producer);
-		tfp.testAsyncSend(kafkaProperties, producer);
+//		tfp.testAsyncSend(kafkaProperties, producer);
 	}
 	
 	public void testSimpleSend(Properties kafkaProperties, Producer<String, String> producer) {
@@ -51,7 +51,7 @@ public class TestKafkaProducer {
 	}
 	
 	public void testAsyncSend(Properties kafkaProperties, Producer<String, String> producer) {
-		ProducerRecord<String, String> record = new ProducerRecord<String, String>("CustomerCountry", "Biomedical Materials", "USA");
+		ProducerRecord<String, String> record = new ProducerRecord<String, String>("CustomerCountry", "Biomedical Materials", "USC");
 		try {
 			RecordMetadata metaData = producer.send(record, new DemoProducerCallback()).get();
 			System.err.println(metaData.toString());

@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.record.CompressionType;
 
@@ -20,7 +21,7 @@ public class TestProducerParam {
 		kafkaProperties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 		kafkaProperties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 		
-		kafkaProperties.put("acks", "all");
+		/*kafkaProperties.put("acks", "all");
 		kafkaProperties.put("buffer.memory", 16384);//bytes
 		kafkaProperties.put("compression.type", CompressionType.SNAPPY.name);
 		kafkaProperties.put("retries", 3);//重试次数
@@ -31,11 +32,13 @@ public class TestProducerParam {
 		kafkaProperties.put("max.in.flight.requests.per.connection", 1);//设置位1能保证顺序，但是严重影响吞吐量
 		// other params
 		
+		kafkaProperties.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, BananaPartitioner.class.getCanonicalName());*/
+		
 		Producer<String, String> producer = new KafkaProducer<String, String>(kafkaProperties);
 		ProducerRecord<String, String> record = new ProducerRecord<String, String>("CustomerCountry", "Precision Products", "France");
 		
 		try {
-			System.err.println(producer.send(record).get().toString());
+			System.err.println(producer.send(record));
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
